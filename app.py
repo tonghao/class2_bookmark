@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 
@@ -12,6 +12,23 @@ bookmarks = [
 @app.route('/')
 def index():
     return render_template('index.html', bookmarks=bookmarks)
+
+
+@app.route('/add_bookmark', methods=['GET', 'POST'])
+def add_bookmark():
+    if request.method == 'POST':
+        title = request.form['title']
+        url = request.form['url']
+        if not url.startswith('http'):
+            url = "https://" + url
+        id = bookmarks[-1]['id'] + 1
+
+        # 保存数据
+        bookmark = {"title": title, "url": url, "id": id}
+        bookmarks.append(bookmark)
+
+        return redirect(url_for('index'))
+    return render_template('add_bookmark.html')
 
 
 if __name__ == '__main__':
