@@ -8,10 +8,33 @@ bookmarks = [
     {'id': 3, 'title': 'bing', 'url': 'http://www.bing.com'},
 ]
 
+users = [
+    {"username": "admin", "password": "admin"},
+    {"username": "user1", "password": "user1"},
+]
+
 
 @app.route('/')
 def index():
     return render_template('index.html', bookmarks=bookmarks)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # 用户验证
+        return redirect(url_for("index"))
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    return "logout"
+
+
+@app.route('/register')
+def register():
+    return "register"
 
 
 @app.route('/add_bookmark', methods=['GET', 'POST'])
