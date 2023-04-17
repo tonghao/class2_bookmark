@@ -1,6 +1,7 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
+app.secret_key = '9iskueuuq9e+'
 
 bookmarks = [
     {'id': 1, 'title': 'Google', 'url': 'http://www.google.com'},
@@ -22,9 +23,16 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        
-        # 用户验证
-        return redirect(url_for("index"))
+        username = request.form.get("username", None)
+        password = request.form.get("password", None)
+
+        for user in users:
+            if user['username'] == username and user['password'] == password:
+                session['username'] = username
+                return redirect(url_for("index"))
+        flash("用户名或密码错误")
+        return redirect(url_for("login"))
+
     return render_template('login.html')
 
 
