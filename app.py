@@ -22,6 +22,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        
         # 用户验证
         return redirect(url_for("index"))
     return render_template('login.html')
