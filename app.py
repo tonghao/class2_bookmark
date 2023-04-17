@@ -4,9 +4,9 @@ app = Flask(__name__)
 app.secret_key = '9iskueuuq9e+'
 
 bookmarks = [
-    {'id': 1, 'title': 'Google', 'url': 'http://www.google.com'},
-    {'id': 2, 'title': 'Yahoo', 'url': 'http://www.yahoo.com'},
-    {'id': 3, 'title': 'bing', 'url': 'http://www.bing.com'},
+    {'id': 1, 'title': 'Google', 'url': 'http://www.google.com', 'user': 'admin'},
+    {'id': 2, 'title': 'Yahoo', 'url': 'http://www.yahoo.com', 'user': 'user1'},
+    {'id': 3, 'title': 'bing', 'url': 'http://www.bing.com', 'user': 'user1'},
 ]
 
 users = [
@@ -17,6 +17,13 @@ users = [
 
 @app.route('/')
 def index():
+    if 'username' in session:
+        user_bookmarks = []
+        for bookmark in bookmarks:
+            if bookmark['user'] == session['username']:
+                user_bookmarks.append(bookmark)
+
+        return render_template('index.html', bookmarks=user_bookmarks)
     return render_template('index.html', bookmarks=bookmarks)
 
 
@@ -38,7 +45,8 @@ def login():
 
 @app.route('/logout')
 def logout():
-    return "logout"
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 
 @app.route('/register')
@@ -54,9 +62,10 @@ def add_bookmark():
         if not url.startswith('http'):
             url = "https://" + url
         id = bookmarks[-1]['id'] + 1
+        user = session['username']
 
         # 保存数据
-        bookmark = {"title": title, "url": url, "id": id}
+        bookmark = {"title": title, "url": url, "id": id, "user": user}
         bookmarks.append(bookmark)
 
         return redirect(url_for('index'))
