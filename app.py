@@ -1,3 +1,5 @@
+import functools
+
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
@@ -13,6 +15,23 @@ users = [
     {"username": "admin", "password": "admin"},
     {"username": "user1", "password": "user1"},
 ]
+
+# def require_login(view):
+#     @functools.wraps(view)
+#     def wrapped_view(**kwargs):
+#         if 'username' not in session:
+#             return redirect(url_for("login"))
+#         return view(**kwargs)
+
+
+def require_login(view):
+    @functools.wraps(view)
+    def wrap(**kwarg):
+        if "username" not in session:
+            return redirect(url_for('login'))
+        return view(**kwarg)
+
+    return wrap
 
 
 @app.route('/')
@@ -55,6 +74,7 @@ def register():
 
 
 @app.route('/add_bookmark', methods=['GET', 'POST'])
+@require_login
 def add_bookmark():
     if request.method == 'POST':
         title = request.form['title']
